@@ -1,21 +1,20 @@
 """
 Abstract document representation
 """
-from __future__ import absolute_import
-import six
 
 class _PythBase(object):
+    validProperties = None
+    contentType = None
 
     def __init__(self, properties={}, content=[]):
         self.properties = {}
         self.content = []
         
-        for (k,v) in six.iteritems(properties):
+        for (k,v) in properties.items():
             self[k] = v
 
         for item in content:
             self.append(item)
-
 
     def __setitem__(self, key, value):
         if key not in self.validProperties:
@@ -72,7 +71,7 @@ class Text(_PythBase):
     """
 
     validProperties = ('bold', 'italic', 'underline', 'url', 'sub', 'super', 'strike')
-    contentType = six.text_type
+    contentType = str
 
     def __repr__(self):
         return "Text('%s' %s)" % ("".join("[%s]" % r.encode("utf-8") for r in self.content), self.properties)
@@ -125,7 +124,6 @@ class List(Paragraph):
     validProperties = ()
     contentType = ListEntry
     
-
 
 class Document(_PythBase):
     """
