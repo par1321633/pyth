@@ -3,3 +3,19 @@
 *.py[co]
 *.egg-info
 tests/currentoutput/
+
+.idea
+
+# IDE
+.vscode/
+
+
+# Environments
+.ENV
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
