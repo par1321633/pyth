@@ -44,14 +44,13 @@ class TestHTMLToRtf(unittest.TestCase):
     def test_nested_html_list_tags(self):
         file_path = os.path.join(self.html_to_rtf_input_dir, "nested_list.html")
         html_data = self.read_file(file_path=file_path)
-        data = BeautifulSoup(html_data, "html.parser")
-        PythHtmlHelper.assign_num(data)
-        PythHtmlHelper.assign_bullets(data)
-        doc = XHTMLReader.read(str(data))
-        output = Rtf15Writer.write(doc).getvalue()
+
+        output = PythHtmlHelper.convert_from_html(html_data)
+
         self.assertTrue("UnOrdered and Ordered Ordered" in output)
         self.assertEqual(10, output.count("Ordered"))
         self.assertEqual(2, output.count("UnOrdered"))
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=1)

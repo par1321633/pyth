@@ -1,4 +1,17 @@
-from bs4 import NavigableString
+"""
+Code will use Pyth Library to convert given HTML to RTF.
+Pyth Library only treat ul tag as list, No support for ol
+Hence we can not distinguish numerical list and bullet list with library.
+
+To treat it differently -
+    1. Append row number in front of numerical list <li> tag content.
+    2. Append bullet in front of bullet list <li> tag content and change tag from ol to ul.
+    (PythHtmlHelper has method for the same)
+"""
+
+from bs4 import BeautifulSoup, NavigableString
+from pyth.html_to_rtf.reader import XHTMLReader
+from pyth.html_to_rtf.writer import Rtf15Writer
 
 
 class PythHtmlHelper:
@@ -36,3 +49,21 @@ class PythHtmlHelper:
         olists = data.find_all("ol")
         for olist in olists:
             olist.name = "ul"  # replaces ol tag with ul
+
+    @staticmethod
+    def convert_from_html(data):
+        """
+        Method to convert html data to rtf using pyth module (Rtf15Writer)
+        There is no separate support for bullet list and numbered list in Pyth Library
+        Hence We will append number and bullets before list data.
+        """
+
+        data = BeautifulSoup(data, "html.parser")
+        PythHtmlHelper.assign_num(data)
+        PythHtmlHelper.assign_bullets(data)
+
+        # generate pyth doc from HTML.
+        doc = XHTMLReader.read(str(data))
+        # generate rtf from pyth document using pyth lib.
+        data = Rtf15Writer.write(doc).getvalue()
+        return data

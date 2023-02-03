@@ -1,6 +1,7 @@
 """
 Read documents from xhtml
 """
+
 from bs4 import BeautifulSoup, NavigableString
 
 from pyth import document
@@ -12,6 +13,13 @@ class XHTMLReader(PythReader):
 
     @classmethod
     def read(self, source, css_source=None, encoding="utf-8", link_callback=None):
+        """
+            Read input HTML and convert into pyth Document
+            Args:
+                source: (str) -> Input HTML
+            Return:
+                (pyth) -> pyth Document from HTMl
+        """
         reader = XHTMLReader(source, css_source, encoding, link_callback)
         return reader.go()
 
@@ -22,6 +30,12 @@ class XHTMLReader(PythReader):
         self.link_callback = link_callback
 
     def go(self):
+        """
+            Method to iterate over the input HTML.
+            This method process the input HTML and return pyth document.
+            Return:
+                (pyth) -> pyth Document from HTMl
+        """
         soup = BeautifulSoup(self.source,
                              features='html.parser')
         # Make sure the document content doesn't use multi-lines
@@ -150,7 +164,12 @@ class XHTMLReader(PythReader):
         elif node.name == 'li':
             # add a new list entry
             new_obj = document.ListEntry()
+            wrapper = document.Paragraph()
+            # Wrap List Content as Paragraph.
+            # We were facing issue if li tag has content in bold or italic.
+            # We are getting data in new line.
+            new_obj.append(wrapper)
             obj.append(new_obj)
-            obj = new_obj
+            obj = wrapper
         for child in node:
             self.process_into(child, obj)

@@ -2,6 +2,8 @@
 Render documents as RTF 1.5
 
 http://www.biblioscape.com/rtf15_spec.htm
+
+TODO: Styling Enable Flag, Header Section
 """
 
 from io import StringIO
@@ -30,7 +32,12 @@ class Rtf15Writer(PythWriter):
     }
 
     @classmethod
-    def write(klass, document, target=None, fontFamily='roman'):
+    def write(cls, document, target=None, fontFamily='roman'):
+        """
+            Method to convert pyth document object to RTF format.
+            Args:
+                document: (document) -> Input pyth document object.
+        """
         if target is None:
             target = StringIO()
 
@@ -53,6 +60,9 @@ class Rtf15Writer(PythWriter):
         }
 
     def go(self):
+        """
+            Parse pyth doc object and write rtf into target.
+        """
         self.listLevel = -1
         self.addSpacing = None
 
@@ -114,16 +124,18 @@ class Rtf15Writer(PythWriter):
         # levelnfc23 means bullets (rather than numbering)
         # leveljc0 means left justified
         # levelfollow0 means a tab after the bullet
-        output = [r'{\*\listtable{\list\listid1\listtemplateid1']
+        output = [r'{\*\listtable{\list\listid1\listtemplateid1',
+                  (r'{\listlevel\levelstartat1\levelnfc23\leveljc0\levelfolsow0'
+                   r'{\leveltext \'01\u61623 ?;}'  # The bullet character
+                   r'\fi-180\f%d'  # Indent the bullet left, and use the symbol font
+                   '}') % self.symbolFontNumber,
+                  '}}']
 
-        for i in range(9):
-            output.append((
-                              r'{\listlevel\levelstartat1\levelnfc23\leveljc0\levelfolsow0'
-                              r'{\leveltext \'01\u61623 ?;}'  # The bullet character
-                              r'\fi-180\f%d'  # Indent the bullet left, and use the symbol font
-                              '}') % self.symbolFontNumber)
-
-        output.append('}}')
+        output = r'{\*\listtable{\list\listid1\listtemplateid1' \
+                 r'{\listlevel\levelstartat1\levelnfc23\leveljc0\levelfolsow0'\
+                 r'{\leveltext \'01\u61623 ?;}' \
+                 r'\fi-180\f%d}}}' % self.symbolFontNumber
+        return output
         return "".join(output)
 
     def _getListOverrides(self):
